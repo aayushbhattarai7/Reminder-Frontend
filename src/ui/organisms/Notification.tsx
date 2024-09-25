@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { jwtDecode } from "jwt-decode";
 import axiosInstance from "../../instance";
 
-interface DecodedToken {
-  id: string;
-  name: string;
-}
+
 
 interface Birthday {
   message: string;
@@ -17,28 +13,23 @@ interface Birthday {
 
 const BirthdayNotification = () => {
   const [birthday, setBirthday] = useState<Birthday | null>(null);
-  const [decodedToken, setDecodedToken] = useState<DecodedToken | null>(null);
-  const [socket, setSocket] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
     if (token) {
       try {
-        const decoded = jwtDecode<DecodedToken>(token);
-        setDecodedToken(decoded);
 
         const newSocket = io("http://localhost:3000", {
           auth: {
             token: token,
           },
         });
-        setSocket(newSocket);
 
         newSocket.on("connect", () => {
           console.log("Connected to the server");
         });
-
+   
         newSocket.on("birthday", (message: Birthday) => {
           setBirthday(message);
         });
@@ -98,10 +89,13 @@ const BirthdayNotification = () => {
   }
 
   return (
-    <div>
-      {birthday &&(
-        <h1>
-          {birthday.message} {getTimeDifference(birthday.data.updatedAt)}
+    <div className="bg-blue-100 p-4 rounded-lg shadow-md flex items-center">
+      {birthday && (
+        <h1 className="text-xl font-bold text-blue-800">
+          {birthday.message}{" "}
+          <span className="text-gray-600">
+            {getTimeDifference(birthday.data.updatedAt)}
+          </span>
         </h1>
       )}
     </div>
