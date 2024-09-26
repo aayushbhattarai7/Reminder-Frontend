@@ -6,7 +6,7 @@ interface FormData {
   email: string;
   password: string;
 }
-const Login = () => {
+const AdminLogin = () => {
   const [error, setError] = useState<string | null>(null);
   const [succcess, setSuccess] = useState<string | null>(null);
   const [formData, setformData] = useState<FormData>({
@@ -18,7 +18,7 @@ const Login = () => {
   const loginUser = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/user/login", {
+      const response = await axiosInstance.post("/admin/login", {
         email: formData.email,
         password: formData.password,
       });
@@ -27,7 +27,7 @@ const Login = () => {
         "accessToken",
         response.data.data.tokens.accessToken
       );
-      navigate("/");
+      navigate("/adminHome");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "An error occurred");
@@ -72,4 +72,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

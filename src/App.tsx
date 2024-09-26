@@ -4,6 +4,8 @@ import { Route } from "./ui/common/molecules/Route";
 import Login from "./ui/organisms/Login";
 import Home from "./ui/pages/Home";
 import BirthdayNotification from "./ui/organisms/Notification";
+import AdminLogin from "./ui/organisms/AdminLogin";
+import AdminHome from "./ui/organisms/AdminHome";
 
 function App() {
   const router = createBrowserRouter([
@@ -23,6 +25,14 @@ function App() {
           path: "/notification",
           element: <BirthdayNotification />,
         },
+        {
+          path: '/adminLogin',
+          element:<AdminLogin/>
+        }, {
+          path: '/adminHome',
+          element:<AdminHome/>
+          
+        }
       ],
     },
   ]);
