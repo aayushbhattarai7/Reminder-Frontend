@@ -5,7 +5,7 @@ import Login from "./ui/organisms/Login";
 import Home from "./ui/pages/Home";
 import BirthdayNotification from "./ui/organisms/Notification";
 import AdminLogin from "./ui/organisms/AdminLogin";
-import AdminHome from "./ui/organisms/AdminHome";
+import AdminHome from "./ui/pages/AdminHome";
 
 function App() {
   const router = createBrowserRouter([

@@ -4,7 +4,6 @@ const axiosInstance: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
 });
 
-const token =
   encryptDecrypt.decrypt(localStorage.getItem('accessToken') as string) ||
   encryptDecrypt.decrypt(sessionStorage.getItem('accessToken') as string);
 

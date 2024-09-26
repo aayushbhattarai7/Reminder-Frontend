@@ -11,9 +11,16 @@ interface Birthday {
   };
 }
 
+interface AssignTaskResponse {
+  message: string;
+}
+
+
 const BirthdayNotification = () => {
   const [birthday, setBirthday] = useState<Birthday | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+      const [notification, setNotification] =
+        useState<AssignTaskResponse | null>(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("accessToken");
@@ -33,6 +40,10 @@ const BirthdayNotification = () => {
         newSocket.on("birthday", (message: Birthday) => {
           setBirthday(message);
         });
+
+         newSocket.on("task-notification", (task: AssignTaskResponse) => {
+           setNotification(task);
+         });
 
         newSocket.on("connect_error", (error) => {
           console.error("Socket connection error:", error);
@@ -98,6 +109,9 @@ const BirthdayNotification = () => {
           </span>
         </h1>
       )}
+      <div>
+        {notification && <p>{notification.message}</p>}
+      </div>
     </div>
   );
 };
