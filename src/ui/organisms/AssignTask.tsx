@@ -86,11 +86,11 @@ const AssignTask = () => {
   const assign = async (id: string, e: any) => {
     e.preventDefault();
     try {
-       await axiosInstance.post(`/task/assign/${id}`, {
-        name: formData.name,
-        deadline: formData.deadline,
-        employee: formData.employee,
-      });
+      //  await axiosInstance.post(`/task/assign/${id}`, {
+      //   name: formData.name,
+      //   deadline: formData.deadline,
+      //   employee: formData.employee,
+      // });
       socket?.emit("assignTask", {
         data: formData,
         user: employeeId,
