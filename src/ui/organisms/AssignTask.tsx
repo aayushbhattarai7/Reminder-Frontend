@@ -3,7 +3,6 @@ import axiosInstance from "../../instance";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { io, Socket as IOSocket } from "socket.io-client";
-import { Socket } from "socket.io";
 interface FormData {
   name: string;
   deadline: string;
@@ -64,7 +63,7 @@ const AssignTask = () => {
           console.log("Connected to the server");
         });
 
-          setSocket(newSocket)
+        setSocket(newSocket);
         newSocket.on("task-notification", (task: AssignTaskResponse) => {
           setNotification(task);
         });
@@ -83,7 +82,7 @@ const AssignTask = () => {
     }
   }, []);
 
-  const assign = async (id: string, e: any) => {
+  const assign = async (e: any) => {
     e.preventDefault();
     try {
       //  await axiosInstance.post(`/task/assign/${id}`, {
@@ -95,6 +94,8 @@ const AssignTask = () => {
         data: formData,
         user: employeeId,
       });
+      console.log(employeeId);
+
       getEmployee();
       reset();
     } catch (error) {
@@ -113,13 +114,17 @@ const AssignTask = () => {
     }));
   };
 
+  const handleEmployeeId = (id: string) => {
+    setEmployeeId(id);
+  };
+
   const getEmployee = async () => {
     try {
       const response = await axiosInstance.get("/admin/employee");
       setEmployee(response.data.data.employees);
-      setEmployeeId(
-        response.data.data.employees.map((employee: any) => employee.id)
-      );
+      // setEmployeeId(
+      //   response.data.data.employees.map((employee: any) => employee.id)
+      // );
     } catch (error) {}
   };
   useEffect(() => {
@@ -131,7 +136,7 @@ const AssignTask = () => {
       {error && <p>{error}</p>}
       Assign Task
       <div>
-        <form action="" onSubmit={(e) => assign(employeeId!, e)}>
+        <form action="" onSubmit={(e) => assign(e)}>
           <div className="flex flex-col justify-center items-center h-[50vh]">
             <label htmlFor="">name</label>
             <input
@@ -148,7 +153,13 @@ const AssignTask = () => {
               onChange={handleChange}
             />
             <label htmlFor="">Employee</label>
-            <select name="" id="">
+            <select
+              name=""
+              id=""
+              onChange={(e) =>
+                handleEmployeeId((e.target as HTMLSelectElement).value)
+              }
+            >
               <option value="">Select Employee</option>
               {employee.map((employee) => (
                 <option value={employee.id}>{employee.name}</option>
