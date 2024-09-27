@@ -51,6 +51,14 @@ const Home = () => {
       setNotifications(() => [...newTasks]);
     });
 
+     newSocket.on("deadline-notification", (taskData) => {
+       console.log("Received task notification:", taskData);
+
+       const newTasks = taskData.task;
+
+       setNotifications(() => [...newTasks]);
+     });
+
     newSocket.on("connect_error", (error) => {
       console.error("Socket connection error:", error);
     });

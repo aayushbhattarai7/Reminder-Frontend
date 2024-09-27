@@ -9,9 +9,7 @@ interface FormData {
   employee: string;
 }
 
-interface AssignTaskResponse {
-  message: string;
-}
+
 
 interface Employee {
   id: string;
@@ -32,9 +30,6 @@ const AssignTask = () => {
   const [succcess, setSuccess] = useState<string | null>(null);
   const [employee, setEmployee] = useState<Employee[]>([]);
   const [employeeId, setEmployeeId] = useState<string | null>(null);
-  const [notification, setNotification] = useState<AssignTaskResponse | null>(
-    null
-  );
 
   const [socket, setSocket] = useState<IOSocket | null>(null);
 
@@ -64,10 +59,7 @@ const AssignTask = () => {
         });
 
         setSocket(newSocket);
-        newSocket.on("task-notification", (task: AssignTaskResponse) => {
-          setNotification(task);
-        });
-
+        
         newSocket.on("connect_error", (error) => {
           console.error("Socket connection error:", error);
         });
@@ -122,9 +114,6 @@ const AssignTask = () => {
     try {
       const response = await axiosInstance.get("/admin/employee");
       setEmployee(response.data.data.employees);
-      // setEmployeeId(
-      //   response.data.data.employees.map((employee: any) => employee.id)
-      // );
     } catch (error) {}
   };
   useEffect(() => {
@@ -148,7 +137,7 @@ const AssignTask = () => {
             <label htmlFor="">Date</label>
             <input
               className="border border-black bg-gray-100 rounded"
-              type="date"
+              type="datetime-local"
               {...register("deadline")}
               onChange={handleChange}
             />
