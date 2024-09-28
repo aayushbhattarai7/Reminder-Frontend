@@ -5,7 +5,6 @@ import { io, Socket as IOSocket } from "socket.io-client";
 
 interface Notification {
   notification: string;
-  createdAt: string;
 }
 
 interface Employee {
@@ -40,24 +39,35 @@ const Home = () => {
 
     newSocket.on("connect", () => {
       console.log("Connected to the server");
+
+      employee.forEach((emp) => {
+        emp.tasks.forEach((task) => {
+          newSocket.emit("send-task-id", { task_id: task.id });
+          console.log(`Sent task ID: ${task.id} to backend`);
+        });
+      });
     });
+
     setSocket(newSocket);
 
-    newSocket.on("task-notification", (taskData) => {
-      console.log("Received task notification:", taskData);
-
-      const newTasks = taskData.task;
-
-      setNotifications(() => [...newTasks]);
-    });
-
-     newSocket.on("deadline-notification", (taskData) => {
+     newSocket.on("task-notification", (taskData) => {
        console.log("Received task notification:", taskData);
 
        const newTasks = taskData.task;
 
        setNotifications(() => [...newTasks]);
      });
+
+
+    newSocket.on("notification", (taskData) => {
+      console.log("Received task notification:", taskData);
+      if (taskData?.notification) {
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          { notification: taskData.notification },
+        ]);
+      }
+    });
 
     newSocket.on("connect_error", (error) => {
       console.error("Socket connection error:", error);
@@ -67,7 +77,7 @@ const Home = () => {
       newSocket.disconnect();
       console.log("Disconnected from the server");
     };
-  }, []);
+  }, [employee]);
 
   const assign = async () => {
     try {
@@ -88,7 +98,10 @@ const Home = () => {
   const getNotification = async () => {
     try {
       const response = await axiosInstance.get(`/user/notification`);
-      setNotifications(response.data.data);
+      const notifications = response.data.data.map((notification: any) => ({
+        notification: notification.notification,
+      }));
+      setNotifications(notifications);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "An error occurred");
@@ -127,11 +140,10 @@ const Home = () => {
       {error && <p>{error}</p>}
       Assign Task
       <div>
-        {notifications.length > 0 ? (
-          notifications.map((notification, index) => (
+        {notifications?.length > 0 ? (
+          notifications?.map((notification, index) => (
             <p key={index}>
-              {" "}
-              {index + 1}. {notification.notification}
+              {index + 1}. {notification?.notification}
             </p>
           ))
         ) : (
