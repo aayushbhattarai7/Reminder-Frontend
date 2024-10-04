@@ -15,11 +15,16 @@ interface Employee {
   tasks: Task[];
 }
 
+interface Admin {
+  id: string;
+}
+
 interface Task {
   id: string;
   name: string;
   deadline: string;
   status: string;
+  admin: Admin;
 }
 
 const Home = () => {
@@ -41,26 +46,28 @@ const Home = () => {
       console.log("Connected to the server");
 
       employee.forEach((emp) => {
-        emp.tasks.forEach((task) => {
-          newSocket.emit("send-task-id", { task_id: task.id });
-          console.log(`Sent task ID: ${task.id} to backend`);
+        emp.tasks?.forEach((task, index) => {
+          newSocket.emit("send-task-id", {
+            task_id: task.id,
+            task_deadline: task.deadline,
+          });
+          console.log(task.id, `${index +1}`, "taskId");
         });
       });
     });
 
     setSocket(newSocket);
 
-     newSocket.on("task-notification", (taskData) => {
-       console.log("Received task notification:", taskData);
+    newSocket.on("task-notification", (taskData) => {
+      console.log("Received task notification:", taskData);
 
-       const newTasks = taskData.task;
+      const newTasks = taskData.task;
 
-       setNotifications(() => [...newTasks]);
-     });
-
+      setNotifications(() => [...newTasks]);
+    });
 
     newSocket.on("notification", (taskData) => {
-      console.log("Received task notification:", taskData);
+      console.log("Received kakakakakkakaka notification:", taskData);
       if (taskData?.notification) {
         setNotifications((prevNotifications) => [
           ...prevNotifications,
@@ -85,6 +92,7 @@ const Home = () => {
       console.log(response, "hahaha");
       const employee = response.data.data;
       setEmployee(employee);
+      console.log(response.data.data,'lokoaoa')
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "An error occurred");
@@ -112,13 +120,16 @@ const Home = () => {
     }
   };
 
-  const submitTask = async (id: string) => {
+  const submitTask = async (id: string, admin_id: string) => {
     try {
-      await axiosInstance.patch(`/user/complete/${id}`);
+      // await axiosInstance.patch(`/user/complete/${id}`);
       socket?.emit("complete", {
         task_id: id,
+        admin_id: admin_id,
       });
+      console.log(admin_id, "jajaja");
       assign();
+      console.log("baang");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || "An error occurred");
@@ -192,7 +203,13 @@ const Home = () => {
                   {task.status}
                 </td>
                 <td>
-                  <button onClick={() => submitTask(task.id)}>submit</button>
+                  {task.status != "EXPIRED" ? (
+                    <button onClick={() => submitTask(task.id, task.admin.id)}>
+                      submit
+                    </button>
+                  ) : (
+                    <p className="border border-gray-300 px-4 py-2">Expired</p>
+                  )}
                 </td>
               </tr>
             ))

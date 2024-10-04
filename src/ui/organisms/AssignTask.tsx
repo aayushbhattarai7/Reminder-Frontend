@@ -58,6 +58,10 @@ const AssignTask = () => {
           console.log("Connected to the server");
         });
 
+        newSocket.on("complete-notification", (tasks) => {
+           console.log(tasks)
+         });
+
         setSocket(newSocket);
         
         newSocket.on("connect_error", (error) => {
