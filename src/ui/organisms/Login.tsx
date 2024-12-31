@@ -15,6 +15,9 @@ const Login = () => {
   });
   const navigate = useNavigate();
 
+  const xyz = () => {
+    console.log("yess")
+  }
   const loginUser = async (e: any) => {
     e.preventDefault();
     try {
